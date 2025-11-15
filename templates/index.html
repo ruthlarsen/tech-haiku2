@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Message Haiku Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 350px;
+            grid-template-areas: "main sidebar";
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+            align-items: start;
+        }
+
+        .main-panel {
+            background: transparent;
+            padding: 30px;
+            grid-area: main;
+            min-width: 0;
+        }
+
+        .sidebar {
+            background: #000000;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 108px;
+            border: 2px solid #ff0000;
+            box-shadow: 
+                0 0 10px rgba(255, 0, 0, 0.5),
+                0 0 20px rgba(255, 0, 0, 0.3),
+                0 0 30px rgba(255, 0, 0, 0.2),
+                inset 0 0 10px rgba(255, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            grid-area: sidebar;
+            width: 100%;
+            max-width: 350px;
+            box-sizing: border-box;
+            overflow: hidden;
+            flex-shrink: 0;
+            flex-grow: 0;
+        }
+
+        .controls-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .controls-sidebar .control-group button {
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff0000;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 
+                0 0 5px rgba(255, 0, 0, 0.8),
+                0 0 10px rgba(255, 0, 0, 0.6),
+                0 0 15px rgba(255, 0, 0, 0.4),
+                0 0 20px rgba(255, 0, 0, 0.3),
+                0 0 35px rgba(255, 0, 0, 0.2);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.9em;
+            color: #ff0000;
+            font-weight: bold;
+            text-shadow: 
+                0 0 5px rgba(255, 0, 0, 0.8),
+                0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .control-group input {
+            padding: 8px;
+            border: 2px solid #ff0000;
+            border-radius: 5px;
+            font-size: 1em;
+            font-family: 'Orbitron', sans-serif;
+            background: #000000;
+            color: #ff0000;
+            box-shadow: 
+                0 0 5px rgba(255, 0, 0, 0.3),
+                inset 0 0 5px rgba(255, 0, 0, 0.1);
+        }
+
+        .control-group input:focus {
+            outline: none;
+            box-shadow: 
+                0 0 10px rgba(255, 0, 0, 0.5),
+                0 0 20px rgba(255, 0, 0, 0.3),
+                inset 0 0 5px rgba(255, 0, 0, 0.1);
+        }
+
+        .control-group button {
+            padding: 10px 20px;
+            background: #000000;
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s;
+            text-shadow: 
+                0 0 5px rgba(255, 0, 0, 0.8),
+                0 0 10px rgba(255, 0, 0, 0.5);
+            box-shadow: 
+                0 0 5px rgba(255, 0, 0, 0.3),
+                inset 0 0 5px rgba(255, 0, 0, 0.1);
+        }
+
+        .control-group button:hover {
+            box-shadow: 
+                0 0 10px rgba(255, 0, 0, 0.6),
+                0 0 20px rgba(255, 0, 0, 0.4),
+                inset 0 0 10px rgba(255, 0, 0, 0.2);
+        }
+
+        .control-group button:active,
+        .control-group button:focus {
+            color: #00ff00;
+            border-color: #00ff00;
+            text-shadow: 
+                0 0 5px rgba(0, 255, 0, 0.8),
+                0 0 10px rgba(0, 255, 0, 0.5);
+            box-shadow: 
+                0 0 10px rgba(0, 255, 0, 0.6),
+                0 0 20px rgba(0, 255, 0, 0.4),
+                inset 0 0 10px rgba(0, 255, 0, 0.2);
+            outline: none;
+        }
+
+        .haiku-container {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .haiku {
+            background: #000000;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #ff0000;
+            box-shadow: 
+                0 0 10px rgba(255, 0, 0, 0.5),
+                0 0 20px rgba(255, 0, 0, 0.3),
+                0 0 30px rgba(255, 0, 0, 0.2),
+                inset 0 0 10px rgba(255, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .haiku-icon {
+            flex-shrink: 0;
+            width: auto;
+            height: calc(1.3em * 1.8 * 3); /* Match 3 lines of text: font-size * line-height * 3 lines */
+            fill: #ff0000;
+            filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.8)) drop-shadow(0 0 10px rgba(255, 0, 0, 0.5));
+        }
+
+        .haiku-content {
+            flex: 1;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .haiku-line {
+            font-size: 1.3em;
+            line-height: 1.8;
+            color: #ff0000;
+            font-style: italic;
+            word-spacing: 0.3em;
+            letter-spacing: 0.05em;
+            text-align: left;
+            text-shadow: 
+                0 0 5px rgba(255, 0, 0, 0.8),
+                0 0 10px rgba(255, 0, 0, 0.5),
+                0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .word-list-container {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .word-list-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .word-list {
+            flex: 1;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            max-height: 500px;
+        }
+        
+        .word-list-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .word-item {
+            padding: 5px 8px;
+            margin: 2px 0;
+            border-radius: 4px;
+            font-size: 0.9em;
+            display: flex;
+            justify-content: space-between;
+            transition: background 0.2s;
+        }
+
+        .word-item.used {
+            opacity: 0.5;
+            text-decoration: line-through;
+            background: #e0e0e0;
+        }
+
+        .word-item:not(.used):hover {
+            background: #e3f2fd;
+        }
+
+        .word-syllables {
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .stats {
+            margin-top: 0;
+            padding-top: 0;
+            width: 100%;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 0.9em;
+            width: 100%;
+        }
+
+        .stat-label {
+            color: #ff0000;
+            text-shadow: 
+                0 0 5px rgba(255, 0, 0, 0.8),
+                0 0 10px rgba(255, 0, 0, 0.5);
+            flex: 1;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #ff0000;
+            text-shadow: 
+                0 0 5px rgba(255, 0, 0, 0.8),
+                0 0 10px rgba(255, 0, 0, 0.5);
+            text-align: right;
+            white-space: nowrap;
+            min-width: fit-content;
+        }
+
+        .scrolling {
+            animation: scroll 20s linear infinite;
+        }
+
+        @keyframes scroll {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="container">
+        <div class="main-panel">
+            <h1>Error Message Haiku Generator</h1>
+            
+            <div class="haiku-container" id="haikuContainer"></div>
+        </div>
+
+        <div class="sidebar">
+            <div class="stats" id="stats"></div>
+            <div class="controls-sidebar">
+                <div class="control-group">
+                    <label>Number of Haikus:</label>
+                    <input type="number" id="haikuCount" value="3" min="1" max="10">
+                </div>
+                <div class="control-group">
+                    <label>Generation Speed (ms):</label>
+                    <input type="number" id="generationSpeed" value="3000" min="500" max="10000" step="500">
+                </div>
+                <div class="control-group">
+                    <label>Re-scrape Interval (min):</label>
+                    <input type="number" id="rescapeInterval" value="5" min="1" max="60">
+                </div>
+                <div class="control-group">
+                    <button onclick="startGeneration()">Start</button>
+                </div>
+                <div class="control-group">
+                    <button onclick="stopGeneration()">Stop</button>
+                </div>
+                <div class="control-group">
+                    <button onclick="manualScrape()">Scrape Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let generationInterval = null;
+        let rescapeInterval = null;
+        let haikuCount = 3;
+        let generationSpeed = 3000;
+        let rescapeIntervalMinutes = 5;
+
+
+        function updateStats() {
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(data => {
+                    const statsEl = document.getElementById('stats');
+                    statsEl.innerHTML = `
+                        <div class="stat-item">
+                            <span class="stat-label">Total Words:</span>
+                            <span class="stat-value">${data.total_words}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Used Words:</span>
+                            <span class="stat-value">${data.used_words}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Available:</span>
+                            <span class="stat-value">${data.available_words}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Last Scrape:</span>
+                            <span class="stat-value">${data.last_scrape ? new Date(data.last_scrape).toLocaleTimeString() : 'Never'}</span>
+                        </div>
+                    `;
+                })
+                .catch(error => console.error('Error fetching stats:', error));
+        }
+
+        // Error icon SVGs - all red
+        function getRandomErrorIcon() {
+            const icons = [
+                // Warning triangle
+                `<svg class="haiku-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                </svg>`,
+                // Exclamation mark in circle
+                `<svg class="haiku-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>`,
+                // Lightning bolt
+                `<svg class="haiku-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                </svg>`,
+                // Alert bell
+                `<svg class="haiku-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                </svg>`,
+                // X/Close
+                `<svg class="haiku-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>`,
+                // Error circle with exclamation
+                `<svg class="haiku-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>`,
+                // Alert with radiating lines
+                `<svg class="haiku-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                </svg>`,
+                // Forbidden/No entry circle
+                `<svg class="haiku-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="none" stroke="#ff0000" stroke-width="2"/>
+                    <path d="M4.93 4.93l14.14 14.14" stroke="#ff0000" stroke-width="2" stroke-linecap="round"/>
+                </svg>`
+            ];
+            return icons[Math.floor(Math.random() * icons.length)];
+        }
+
+        function generateHaiku() {
+            fetch('/api/haiku')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(haiku => {
+                    if (!haiku || !haiku.line1 || !haiku.line2 || !haiku.line3) {
+                        console.error('Invalid haiku data received:', haiku);
+                        return;
+                    }
+                    const container = document.getElementById('haikuContainer');
+                    if (!container) {
+                        console.error('Haiku container not found');
+                        return;
+                    }
+                    const haikuEl = document.createElement('div');
+                    haikuEl.className = 'haiku';
+                    const icon = getRandomErrorIcon();
+                    haikuEl.innerHTML = `
+                        ${icon}
+                        <div class="haiku-content">
+                            <div class="haiku-line">${haiku.line1}</div>
+                            <div class="haiku-line">${haiku.line2}</div>
+                            <div class="haiku-line">${haiku.line3}</div>
+                        </div>
+                    `;
+                    container.insertBefore(haikuEl, container.firstChild);
+                    
+                    // Keep only the specified number of haikus
+                    while (container.children.length > haikuCount) {
+                        container.removeChild(container.lastChild);
+                    }
+                    
+                    updateStats();
+                })
+                .catch(error => {
+                    console.error('Error generating haiku:', error);
+                    // No alert - just log to console
+                });
+        }
+
+        function startGeneration() {
+            stopGeneration();
+            haikuCount = parseInt(document.getElementById('haikuCount').value) || 3;
+            generationSpeed = parseInt(document.getElementById('generationSpeed').value) || 3000;
+            rescapeIntervalMinutes = parseInt(document.getElementById('rescapeInterval').value) || 5;
+            
+            generationInterval = setInterval(generateHaiku, generationSpeed);
+            rescapeInterval = setInterval(() => {
+                manualScrape();
+            }, rescapeIntervalMinutes * 60 * 1000);
+            
+            // Generate first haiku immediately
+            generateHaiku();
+        }
+
+        function stopGeneration() {
+            if (generationInterval) {
+                clearInterval(generationInterval);
+                generationInterval = null;
+            }
+            if (rescapeInterval) {
+                clearInterval(rescapeInterval);
+                rescapeInterval = null;
+            }
+        }
+
+        function manualScrape() {
+            fetch('/api/scrape', { method: 'POST' })
+                .then(() => {
+                    setTimeout(() => {
+                        updateStats();
+                    }, 2000); // Wait a bit for scraping to complete
+                })
+                .catch(error => console.error('Error triggering scrape:', error));
+        }
+
+        // Initial load
+        updateStats();
+        setInterval(updateStats, 2000);
+
+        // Matrix-style falling letters animation
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Making the canvas full screen
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+        
+        // Characters - letters, numbers, and symbols
+        let matrix = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+        // Converting the string into an array of single characters
+        matrix = matrix.split("");
+        
+        const font_size = 10;
+        const columns = canvas.width / font_size; // Number of columns for the rain
+        
+        // An array of drops - one per column
+        const drops = [];
+        // x below is the x coordinate
+        // 1 = y co-ordinate of the drop (same for every drop initially)
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+        
+        // Handle window resize
+        function resizeCanvas() {
+            canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth;
+            // Recalculate columns and reset drops
+            const newColumns = canvas.width / font_size;
+            for (let x = 0; x < newColumns; x++) {
+                if (drops[x] === undefined) {
+                    drops[x] = 1;
+                }
+            }
+            // Trim drops array if window got smaller
+            drops.length = newColumns;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Drawing the characters
+        function draw() {
+            // Black BG for the canvas
+            // Translucent BG to show trail
+            ctx.fillStyle = "rgba(0, 0, 0, 0.04)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "#5df442"; // Green text
+            ctx.font = font_size + "px Orbitron";
+            
+            // Looping over drops
+            for (let i = 0; i < drops.length; i++) {
+                // A random character to print
+                const text = matrix[Math.floor(Math.random() * matrix.length)];
+                // x = i*font_size, y = value of drops[i]*font_size
+                ctx.fillText(text, i * font_size, drops[i] * font_size);
+                
+                // Sending the drop back to the top randomly after it has crossed the screen
+                // Adding a randomness to the reset to make the drops scattered on the Y axis
+                if (drops[i] * font_size > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                
+                // Incrementing Y coordinate
+                drops[i]++;
+            }
+        }
+        
+        // Start animation
+        setInterval(draw, 35);
+    </script>
+</body>
+</html>
+
