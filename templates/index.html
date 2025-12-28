@@ -18,7 +18,7 @@
             font-family: 'Orbitron', sans-serif;
             background: #000000;
             min-height: 100vh;
-            padding: 20px;
+            padding: 0;
             color: #333;
             position: relative;
             overflow-x: hidden;
@@ -34,68 +34,148 @@
             pointer-events: none;
         }
 
+        /* Top Menu Bar */
+        .top-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #000000;
+            border-bottom: 2px solid #ff0000;
+            box-shadow: 
+                0 0 10px rgba(255, 0, 0, 0.5),
+                0 0 20px rgba(255, 0, 0, 0.3);
+            z-index: 100;
+            padding: 10px 15px;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-title {
+            color: #ff0000;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-shadow: 
+                0 0 5px rgba(255, 0, 0, 0.8),
+                0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .menu-toggle {
+            background: #000000;
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            text-shadow: 
+                0 0 5px rgba(255, 0, 0, 0.8),
+                0 0 10px rgba(255, 0, 0, 0.5);
+            box-shadow: 
+                0 0 5px rgba(255, 0, 0, 0.3),
+                inset 0 0 5px rgba(255, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .menu-toggle:hover {
+            box-shadow: 
+                0 0 10px rgba(255, 0, 0, 0.6),
+                0 0 20px rgba(255, 0, 0, 0.4),
+                inset 0 0 10px rgba(255, 0, 0, 0.2);
+        }
+
+        .menu-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: #000000;
+        }
+
+        .menu-content.open {
+            max-height: 1000px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .menu-controls {
+            padding: 15px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 350px;
-            grid-template-areas: "main sidebar";
-            gap: 20px;
+            padding: 80px 20px 20px;
             position: relative;
             z-index: 1;
-            align-items: start;
         }
 
         .main-panel {
             background: transparent;
-            padding: 30px;
-            grid-area: main;
-            min-width: 0;
+            padding: 0;
         }
 
         .sidebar {
-            background: #000000;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 108px;
-            border: 2px solid #ff0000;
-            box-shadow: 
-                0 0 10px rgba(255, 0, 0, 0.5),
-                0 0 20px rgba(255, 0, 0, 0.3),
-                0 0 30px rgba(255, 0, 0, 0.2),
-                inset 0 0 10px rgba(255, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            grid-area: sidebar;
-            width: 100%;
-            max-width: 350px;
-            box-sizing: border-box;
-            overflow: hidden;
-            flex-shrink: 0;
-            flex-grow: 0;
-        }
-
-        .controls-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
-            width: 100%;
-        }
-
-        .controls-sidebar .control-group button {
-            width: 100%;
+            display: none;
         }
 
         h1 {
             text-align: center;
             color: #ff0000;
             margin-bottom: 30px;
-            font-size: 2.5em;
+            font-size: 2em;
             text-shadow: 
                 0 0 3px rgba(255, 0, 0, 0.5),
                 0 0 6px rgba(255, 0, 0, 0.3);
+        }
+
+        @media (min-width: 768px) {
+            .top-menu {
+                display: none;
+            }
+
+            .container {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 350px;
+                grid-template-areas: "main sidebar";
+                gap: 20px;
+                padding: 20px;
+                align-items: start;
+            }
+
+            .sidebar {
+                display: block;
+                background: #000000;
+                border-radius: 10px;
+                padding: 20px;
+                margin-top: 0;
+                border: 2px solid #ff0000;
+                box-shadow: 
+                    0 0 10px rgba(255, 0, 0, 0.5),
+                    0 0 20px rgba(255, 0, 0, 0.3),
+                    0 0 30px rgba(255, 0, 0, 0.2),
+                    inset 0 0 10px rgba(255, 0, 0, 0.1);
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                grid-area: sidebar;
+                width: 100%;
+                max-width: 350px;
+                box-sizing: border-box;
+                overflow: hidden;
+                flex-shrink: 0;
+                flex-grow: 0;
+            }
+
+            h1 {
+                font-size: 2.5em;
+            }
         }
 
         .controls {
@@ -110,10 +190,11 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
+            width: 100%;
         }
 
         .control-group label {
-            font-size: 0.9em;
+            font-size: 0.85em;
             color: #ff0000;
             font-weight: bold;
             text-shadow: 
@@ -125,13 +206,14 @@
             padding: 8px;
             border: 2px solid #ff0000;
             border-radius: 5px;
-            font-size: 1em;
+            font-size: 0.9em;
             font-family: 'Orbitron', sans-serif;
             background: #000000;
             color: #ff0000;
             box-shadow: 
                 0 0 5px rgba(255, 0, 0, 0.3),
                 inset 0 0 5px rgba(255, 0, 0, 0.1);
+            width: 100%;
         }
 
         .control-group input:focus {
@@ -143,13 +225,13 @@
         }
 
         .control-group button {
-            padding: 10px 20px;
+            padding: 10px 15px;
             background: #000000;
             color: #ff0000;
             border: 2px solid #ff0000;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1em;
+            font-size: 0.9em;
             font-family: 'Orbitron', sans-serif;
             transition: all 0.3s;
             text-shadow: 
@@ -158,6 +240,7 @@
             box-shadow: 
                 0 0 5px rgba(255, 0, 0, 0.3),
                 inset 0 0 5px rgba(255, 0, 0, 0.1);
+            width: 100%;
         }
 
         .control-group button:hover {
@@ -181,15 +264,25 @@
             outline: none;
         }
 
+        @media (min-width: 768px) {
+            .control-group {
+                width: auto;
+            }
+
+            .control-group button {
+                width: 100%;
+            }
+        }
+
         .haiku-container {
             display: grid;
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 30px;
         }
 
         .haiku {
             background: #000000;
-            padding: 25px;
+            padding: 15px;
             border-radius: 10px;
             border: 2px solid #ff0000;
             box-shadow: 
@@ -200,19 +293,35 @@
             animation: fadeIn 0.5s ease-in;
             display: flex;
             align-items: flex-start;
-            gap: 15px;
+            gap: 10px;
         }
 
         .haiku-icon {
             flex-shrink: 0;
-            width: auto;
-            height: calc(1.3em * 1.8 * 3); /* Match 3 lines of text: font-size * line-height * 3 lines */
+            width: 30px;
+            height: auto;
             fill: #ff0000;
             filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.8)) drop-shadow(0 0 10px rgba(255, 0, 0, 0.5));
         }
 
         .haiku-content {
             flex: 1;
+        }
+
+        @media (min-width: 768px) {
+            .haiku-container {
+                gap: 20px;
+            }
+
+            .haiku {
+                padding: 25px;
+                gap: 15px;
+            }
+
+            .haiku-icon {
+                width: auto;
+                height: calc(1.3em * 1.8 * 3);
+            }
         }
 
         @keyframes fadeIn {
@@ -227,17 +336,25 @@
         }
 
         .haiku-line {
-            font-size: 1.3em;
-            line-height: 1.8;
+            font-size: 1.1em;
+            line-height: 1.6;
             color: #ff0000;
             font-style: italic;
-            word-spacing: 0.3em;
+            word-spacing: 0.2em;
             letter-spacing: 0.05em;
             text-align: left;
             text-shadow: 
                 0 0 5px rgba(255, 0, 0, 0.8),
                 0 0 10px rgba(255, 0, 0, 0.5),
                 0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        @media (min-width: 768px) {
+            .haiku-line {
+                font-size: 1.3em;
+                line-height: 1.8;
+                word-spacing: 0.3em;
+            }
         }
 
         .word-list-container {
@@ -299,6 +416,20 @@
             margin-top: 0;
             padding-top: 0;
             width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .main-panel .stats {
+            background: #000000;
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #ff0000;
+            box-shadow: 
+                0 0 10px rgba(255, 0, 0, 0.5),
+                0 0 20px rgba(255, 0, 0, 0.3),
+                0 0 30px rgba(255, 0, 0, 0.2),
+                inset 0 0 10px rgba(255, 0, 0, 0.1);
+            max-height: 150px;
         }
 
         .stat-item {
@@ -308,6 +439,13 @@
             margin: 8px 0;
             font-size: 0.9em;
             width: 100%;
+            padding: 5px 0;
+        }
+
+        .main-panel .stat-item {
+            font-size: 0.95em;
+            margin: 2px 0;
+            padding: 2px 0;
         }
 
         .stat-label {
@@ -345,16 +483,15 @@
 </head>
 <body>
     <canvas id="matrix-canvas"></canvas>
-    <div class="container">
-        <div class="main-panel">
-            <h1>Error Message Haiku Generator</h1>
-            
-            <div class="haiku-container" id="haikuContainer"></div>
+    
+    <!-- Mobile Menu -->
+    <div class="top-menu">
+        <div class="menu-header">
+            <div class="menu-title">Error Message Haiku Generator</div>
+            <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
         </div>
-
-        <div class="sidebar">
-            <div class="stats" id="stats"></div>
-            <div class="controls-sidebar">
+        <div class="menu-content" id="menuContent">
+            <div class="menu-controls">
                 <div class="control-group">
                     <label>Number of Haikus:</label>
                     <input type="number" id="haikuCount" value="3" min="1" max="10">
@@ -380,20 +517,96 @@
         </div>
     </div>
 
+    <div class="container">
+        <div class="main-panel">
+            <div class="stats" id="statsMain"></div>
+            
+            <div class="haiku-container" id="haikuContainer"></div>
+        </div>
+
+        <div class="sidebar">
+            <div class="stats" id="stats"></div>
+            <div class="controls-sidebar">
+                <div class="control-group">
+                    <label>Number of Haikus:</label>
+                    <input type="number" id="haikuCountDesktop" value="3" min="1" max="10">
+                </div>
+                <div class="control-group">
+                    <label>Generation Speed (ms):</label>
+                    <input type="number" id="generationSpeedDesktop" value="3000" min="500" max="10000" step="500">
+                </div>
+                <div class="control-group">
+                    <label>Re-scrape Interval (min):</label>
+                    <input type="number" id="rescapeIntervalDesktop" value="5" min="1" max="60">
+                </div>
+                <div class="control-group">
+                    <button onclick="startGeneration()">Start</button>
+                </div>
+                <div class="control-group">
+                    <button onclick="stopGeneration()">Stop</button>
+                </div>
+                <div class="control-group">
+                    <button onclick="manualScrape()">Scrape Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let generationInterval = null;
         let rescapeInterval = null;
         let haikuCount = 3;
         let generationSpeed = 3000;
         let rescapeIntervalMinutes = 5;
+        let totalHaikusGenerated = 0;
 
+        function toggleMenu() {
+            const menuContent = document.getElementById('menuContent');
+            menuContent.classList.toggle('open');
+        }
+
+        function syncInputs() {
+            // Sync mobile inputs to desktop
+            const haikuCountMobile = document.getElementById('haikuCount');
+            const haikuCountDesktop = document.getElementById('haikuCountDesktop');
+            const speedMobile = document.getElementById('generationSpeed');
+            const speedDesktop = document.getElementById('generationSpeedDesktop');
+            const intervalMobile = document.getElementById('rescapeInterval');
+            const intervalDesktop = document.getElementById('rescapeIntervalDesktop');
+
+            if (haikuCountMobile && haikuCountDesktop) {
+                haikuCountMobile.addEventListener('input', () => {
+                    haikuCountDesktop.value = haikuCountMobile.value;
+                });
+                haikuCountDesktop.addEventListener('input', () => {
+                    haikuCountMobile.value = haikuCountDesktop.value;
+                });
+            }
+
+            if (speedMobile && speedDesktop) {
+                speedMobile.addEventListener('input', () => {
+                    speedDesktop.value = speedMobile.value;
+                });
+                speedDesktop.addEventListener('input', () => {
+                    speedMobile.value = speedDesktop.value;
+                });
+            }
+
+            if (intervalMobile && intervalDesktop) {
+                intervalMobile.addEventListener('input', () => {
+                    intervalDesktop.value = intervalMobile.value;
+                });
+                intervalDesktop.addEventListener('input', () => {
+                    intervalMobile.value = intervalDesktop.value;
+                });
+            }
+        }
 
         function updateStats() {
             fetch('/api/stats')
                 .then(response => response.json())
                 .then(data => {
-                    const statsEl = document.getElementById('stats');
-                    statsEl.innerHTML = `
+                    const statsHTML = `
                         <div class="stat-item">
                             <span class="stat-label">Total Words:</span>
                             <span class="stat-value">${data.total_words}</span>
@@ -407,10 +620,24 @@
                             <span class="stat-value">${data.available_words}</span>
                         </div>
                         <div class="stat-item">
+                            <span class="stat-label">Haikus Generated:</span>
+                            <span class="stat-value">${totalHaikusGenerated}</span>
+                        </div>
+                        <div class="stat-item">
                             <span class="stat-label">Last Scrape:</span>
                             <span class="stat-value">${data.last_scrape ? new Date(data.last_scrape).toLocaleTimeString() : 'Never'}</span>
                         </div>
                     `;
+                    
+                    const statsEl = document.getElementById('stats');
+                    const statsMainEl = document.getElementById('statsMain');
+                    
+                    if (statsEl) {
+                        statsEl.innerHTML = statsHTML;
+                    }
+                    if (statsMainEl) {
+                        statsMainEl.innerHTML = statsHTML;
+                    }
                 })
                 .catch(error => console.error('Error fetching stats:', error));
         }
@@ -486,6 +713,9 @@
                     `;
                     container.insertBefore(haikuEl, container.firstChild);
                     
+                    // Increment haiku count
+                    totalHaikusGenerated++;
+                    
                     // Keep only the specified number of haikus
                     while (container.children.length > haikuCount) {
                         container.removeChild(container.lastChild);
@@ -501,9 +731,29 @@
 
         function startGeneration() {
             stopGeneration();
-            haikuCount = parseInt(document.getElementById('haikuCount').value) || 3;
-            generationSpeed = parseInt(document.getElementById('generationSpeed').value) || 3000;
-            rescapeIntervalMinutes = parseInt(document.getElementById('rescapeInterval').value) || 5;
+            
+            // Get values from either mobile or desktop inputs
+            const haikuCountInput = document.getElementById('haikuCount') || document.getElementById('haikuCountDesktop');
+            const speedInput = document.getElementById('generationSpeed') || document.getElementById('generationSpeedDesktop');
+            const intervalInput = document.getElementById('rescapeInterval') || document.getElementById('rescapeIntervalDesktop');
+            
+            haikuCount = parseInt(haikuCountInput?.value) || 3;
+            generationSpeed = parseInt(speedInput?.value) || 3000;
+            rescapeIntervalMinutes = parseInt(intervalInput?.value) || 5;
+            
+            // Sync values across both inputs
+            if (document.getElementById('haikuCount') && document.getElementById('haikuCountDesktop')) {
+                document.getElementById('haikuCount').value = haikuCount;
+                document.getElementById('haikuCountDesktop').value = haikuCount;
+            }
+            if (document.getElementById('generationSpeed') && document.getElementById('generationSpeedDesktop')) {
+                document.getElementById('generationSpeed').value = generationSpeed;
+                document.getElementById('generationSpeedDesktop').value = generationSpeed;
+            }
+            if (document.getElementById('rescapeInterval') && document.getElementById('rescapeIntervalDesktop')) {
+                document.getElementById('rescapeInterval').value = rescapeIntervalMinutes;
+                document.getElementById('rescapeIntervalDesktop').value = rescapeIntervalMinutes;
+            }
             
             generationInterval = setInterval(generateHaiku, generationSpeed);
             rescapeInterval = setInterval(() => {
@@ -536,6 +786,7 @@
         }
 
         // Initial load
+        syncInputs();
         updateStats();
         setInterval(updateStats, 2000);
 
