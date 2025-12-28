@@ -135,6 +135,24 @@
                 0 0 6px rgba(255, 0, 0, 0.3);
         }
 
+        .desktop-title {
+            display: none;
+        }
+
+        .desktop-stats {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .desktop-title {
+                display: block;
+            }
+
+            .desktop-stats {
+                display: block;
+            }
+        }
+
         @media (min-width: 768px) {
             .top-menu {
                 display: none;
@@ -416,7 +434,6 @@
             margin-top: 0;
             padding-top: 0;
             width: 100%;
-            margin-bottom: 30px;
         }
 
         .main-panel .stats {
@@ -430,6 +447,14 @@
                 0 0 30px rgba(255, 0, 0, 0.2),
                 inset 0 0 10px rgba(255, 0, 0, 0.1);
             max-height: 150px;
+            display: block;
+            margin-bottom: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .main-panel .stats {
+                display: none;
+            }
         }
 
         .stat-item {
@@ -519,13 +544,14 @@
 
     <div class="container">
         <div class="main-panel">
+            <h1 class="desktop-title">Error Message Haiku Generator</h1>
             <div class="stats" id="statsMain"></div>
             
             <div class="haiku-container" id="haikuContainer"></div>
         </div>
 
         <div class="sidebar">
-            <div class="stats" id="stats"></div>
+            <div class="stats desktop-stats" id="stats"></div>
             <div class="controls-sidebar">
                 <div class="control-group">
                     <label>Number of Haikus:</label>
